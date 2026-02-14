@@ -1,0 +1,22 @@
+# Cassandra Configuration
+
+cassandra:
+  # Hosts to connect to (can be single host or list of hosts)
+  hosts:
+    - localhost
+  
+  # Port to connect to
+  port: 9042
+  
+  # Keyspace to use
+  keyspace: demo
+  
+  # Authentication (optional)
+  # auth:
+  #   username: cassandra
+  #   password: cassandra
+
+# Logging Configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
