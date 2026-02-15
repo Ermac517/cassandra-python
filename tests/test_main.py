@@ -83,7 +83,8 @@ class TestMain(unittest.TestCase):
 
     @patch('cassandra_python.main.load_config')
     @patch('cassandra_python.main.CassandraConnection')
-    def test_main_success(self, mock_connection_class, mock_load_config):
+    @patch('cassandra_python.main.CassandraTable')
+    def test_main_success(self, mock_table_class, mock_connection_class, mock_load_config):
         """Test main function successful execution."""
         # Setup mocks
         mock_config = {
@@ -100,6 +101,11 @@ class TestMain(unittest.TestCase):
         mock_conn.connect.return_value = mock_session
         mock_connection_class.return_value = mock_conn
 
+        # Mock table
+        mock_table = Mock()
+        mock_table.query_data.return_value = [{"id": "1", "name": "John", "age": 30}]
+        mock_table_class.return_value = mock_table
+
         # Run main
         main()
 
@@ -110,11 +116,16 @@ class TestMain(unittest.TestCase):
             port=9042
         )
         mock_conn.connect.assert_called_once_with(keyspace='demo')
+        mock_table_class.assert_called_once_with(mock_session, 'demo', 'users')
+        mock_table.create_table.assert_called_once()
+        mock_table.insert_data.assert_called_once()
+        mock_table.query_data.assert_called_once_with('age > 25')
         mock_conn.disconnect.assert_called_once()
 
     @patch('cassandra_python.main.load_config')
     @patch('cassandra_python.main.CassandraConnection')
-    def test_main_with_custom_config(self, mock_connection_class, mock_load_config):
+    @patch('cassandra_python.main.CassandraTable')
+    def test_main_with_custom_config(self, mock_table_class, mock_connection_class, mock_load_config):
         """Test main function with custom configuration values."""
         # Setup mocks with custom values
         mock_config = {
@@ -131,6 +142,11 @@ class TestMain(unittest.TestCase):
         mock_conn.connect.return_value = mock_session
         mock_connection_class.return_value = mock_conn
 
+        # Mock table
+        mock_table = Mock()
+        mock_table.query_data.return_value = []
+        mock_table_class.return_value = mock_table
+
         # Run main
         main()
 
@@ -140,10 +156,12 @@ class TestMain(unittest.TestCase):
             port=9043
         )
         mock_conn.connect.assert_called_once_with(keyspace='production')
+        mock_table_class.assert_called_once_with(mock_session, 'production', 'users')
 
     @patch('cassandra_python.main.load_config')
     @patch('cassandra_python.main.CassandraConnection')
-    def test_main_with_defaults(self, mock_connection_class, mock_load_config):
+    @patch('cassandra_python.main.CassandraTable')
+    def test_main_with_defaults(self, mock_table_class, mock_connection_class, mock_load_config):
         """Test main function uses defaults when config values are missing."""
         # Setup mocks with empty cassandra config
         mock_config = {'cassandra': {}}
@@ -153,6 +171,11 @@ class TestMain(unittest.TestCase):
         mock_session = Mock()
         mock_conn.connect.return_value = mock_session
         mock_connection_class.return_value = mock_conn
+
+        # Mock table
+        mock_table = Mock()
+        mock_table.query_data.return_value = []
+        mock_table_class.return_value = mock_table
 
         # Run main
         main()

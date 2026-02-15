@@ -7,6 +7,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+from uuid import UUID
 
 import yaml
 
@@ -14,6 +15,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from cassandra_python.connection import CassandraConnection
+from cassandra_python.table import CassandraTable
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -67,7 +69,16 @@ def main():
     session = conn.connect(keyspace=keyspace)
      
     logger.info("Connected successfully")
-     
+
+    # Example: Table operations
+    table = CassandraTable(session, keyspace, "users")
+    table.create_table("id UUID PRIMARY KEY, name TEXT, age INT")
+    # Convert UUID string to UUID object
+    table.insert_data({"id": UUID("123e4567-e89b-12d3-a456-426614174000"), "name": "John Doe", "age": 30})
+    result = table.query_data("age > 25")
+    for row in result:
+        logger.info(f"Row: {row}")
+
     conn.disconnect()
     logger.info("Disconnected")
 
