@@ -32,7 +32,9 @@ class TestCassandraTable(unittest.TestCase):
         schema = "id UUID PRIMARY KEY, name TEXT, age INT"
         self.table.create_table(schema)
 
-        expected_query = f"CREATE TABLE IF NOT EXISTS {self.keyspace}.{self.table_name} ({schema})"
+        expected_query = (
+            f"CREATE TABLE IF NOT EXISTS {self.keyspace}.{self.table_name} ({schema})"
+        )
         self.mock_session.execute.assert_called_once_with(expected_query)
 
     def test_drop_table(self):
@@ -125,7 +127,9 @@ class TestCassandraTable(unittest.TestCase):
         schema = "id UUID PRIMARY KEY, name TEXT, age INT, created_at TIMESTAMP, tags SET<TEXT>"
         self.table.create_table(schema)
 
-        expected_query = f"CREATE TABLE IF NOT EXISTS {self.keyspace}.{self.table_name} ({schema})"
+        expected_query = (
+            f"CREATE TABLE IF NOT EXISTS {self.keyspace}.{self.table_name} ({schema})"
+        )
         self.mock_session.execute.assert_called_once_with(expected_query)
 
     def test_insert_data_empty_dict(self):

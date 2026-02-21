@@ -35,7 +35,7 @@ class TestCassandraConnection(unittest.TestCase):
         self.assertEqual(conn.username, "user")
         self.assertEqual(conn.password, "pass")
 
-    @patch('cassandra_python.connection.Cluster')
+    @patch("cassandra_python.connection.Cluster")
     def test_connect_without_keyspace(self, mock_cluster_class):
         """Test connecting to cluster without keyspace."""
         # Setup mock
@@ -57,7 +57,7 @@ class TestCassandraConnection(unittest.TestCase):
         self.assertEqual(conn.session, mock_session)
         self.assertEqual(conn.cluster, mock_cluster)
 
-    @patch('cassandra_python.connection.Cluster')
+    @patch("cassandra_python.connection.Cluster")
     def test_connect_with_keyspace(self, mock_cluster_class):
         """Test connecting to cluster with keyspace."""
         # Setup mock
@@ -68,14 +68,14 @@ class TestCassandraConnection(unittest.TestCase):
 
         # Test connection
         conn = CassandraConnection(self.hosts, self.port)
-        session = conn.connect(keyspace='test_keyspace')
+        session = conn.connect(keyspace="test_keyspace")
 
         # Assertions
-        mock_cluster.connect.assert_called_once_with('test_keyspace')
+        mock_cluster.connect.assert_called_once_with("test_keyspace")
         self.assertEqual(session, mock_session)
 
-    @patch('cassandra_python.connection.PlainTextAuthProvider')
-    @patch('cassandra_python.connection.Cluster')
+    @patch("cassandra_python.connection.PlainTextAuthProvider")
+    @patch("cassandra_python.connection.Cluster")
     def test_connect_with_auth(self, mock_cluster_class, mock_auth_provider_class):
         """Test connecting with authentication."""
         # Setup mocks
@@ -101,7 +101,7 @@ class TestCassandraConnection(unittest.TestCase):
         )
         self.assertEqual(session, mock_session)
 
-    @patch('cassandra_python.connection.Cluster')
+    @patch("cassandra_python.connection.Cluster")
     def test_connect_failure(self, mock_cluster_class):
         """Test connection failure handling."""
         # Setup mock to raise exception
@@ -109,10 +109,10 @@ class TestCassandraConnection(unittest.TestCase):
 
         # Test connection failure
         conn = CassandraConnection(self.hosts, self.port)
-        
+
         with self.assertRaises(Exception) as context:
             conn.connect()
-        
+
         self.assertIn("Connection failed", str(context.exception))
 
     def test_disconnect(self):
